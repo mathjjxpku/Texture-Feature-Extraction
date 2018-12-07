@@ -95,8 +95,8 @@ def LBP_circle(image):
 
 if __name__ == '__main__':
     
-    im = cv2.imread('/Users/xing/Y-lab/ori_bgr.jpg')
-    mask = cv2.imread('/Users/xing/Y-lab/hair_mask.jpg')
+    im = cv2.imread('../Picture/ori_bgr.jpg')
+    mask = cv2.imread('../Picture/hair_mask.jpg')
     
     b,g,r = cv2.split(mask)
     mask = cv2.merge((r,g,b))
@@ -107,9 +107,6 @@ if __name__ == '__main__':
     #get hair part
     mask[mask > 50] = 255
     mask[mask <= 50] = 0
-    # mask = cv2.ximgproc.dtFilter(guide=im, src=mask, sigmaSpatial=500, sigmaColor=100)
-    # # # print(np.unique(mask))
-    # thres, mask = cv2.threshold(mask, thresh=127, maxval=255, type=cv2.THRESH_BINARY)
 
     # get hair image
     mask_pts = np.where(mask == 255)
@@ -129,35 +126,4 @@ if __name__ == '__main__':
     plt.show()
 
 
-    # fig, ax = plt.subplots(nrows=2, ncols=2)
-    #
-    # image = data.coins()
-    # edges = filters.sobel(image)
-    #
-    # low = 0.1
-    # high = 0.35
-    #
-    # lowt = (edges > low).astype(int)
-    # hight = (edges > high).astype(int)
-    # hyst = filters.apply_hysteresis_threshold(edges, low, high)
-    #
-    # ax[0, 0].imshow(hyst + hight, cmap='gray')
-    # ax[0, 0].set_title('Original image')
-    #
-    # ax[0, 1].imshow(hight, cmap='magma')
-    # ax[0, 1].set_title('Sobel edges')
-    #
-    # ax[1, 0].imshow(lowt, cmap='magma')
-    # ax[1, 0].set_title('Low threshold')
-    #
-    # ax[1, 1].imshow(hyst, cmap='magma')
-    # ax[1, 1].set_title('Hysteresis threshold')
-    #
-    # print(np.max(hyst + hight))
-    #
-    # for a in ax.ravel():
-    #     a.axis('off')
-    #
-    # plt.tight_layout()
-    #
-    # plt.show()
+   
