@@ -193,6 +193,25 @@ def rotation_invariant_LBP(src):
     display_im(dst,'LBP_invariant')
     return dst
 
+def sharpening(image):
+    W, H = image.shape                    #获得图像长宽
+    xx = [-1,  0,  1, 1, 1, 0, -1, -1, 0]
+    
+    yy = [-1, -1, -1, 0, 1, 1,  1,  0, 0]    #xx, yy 主要作用对应顺时针旋转时,相对中点的相对值.
+    
+    w = [-1,  -1,  -1, -1, -1, -1, -1, -1, 9]
+    
+    res = np.zeros((W - 2, H - 2),dtype="uint8")  #创建0数组,显而易见维度原始图像的长宽分别减去2，并且类型一定的是uint8,无符号8位,opencv图片的存储格式.
+    for i in range(1, W - 2):
+        for j in range(1, H - 2):
+            temp = 0
+            for m in range(9):
+                Xtemp = xx[m] + i    
+                Ytemp = yy[m] + j    #分别获得对应坐标点
+                temp=temp+image[Xtemp, Ytemp]*w[m]
+            res[i - 1][j - 1] =temp   #写入结果中
+    return res
+
 if __name__ == '__main__':
     
     im = cv2.imread('/Users/xing/Y-lab/ori_bgr.jpg')
@@ -203,11 +222,15 @@ if __name__ == '__main__':
     b,g,r = cv2.split(im)
     im = cv2.merge((r,g,b))
     display_im(im, 'im')
+    display_im(cv2.merge((sharpening(r),sharpening(g),sharpening(b))),'sharpening')
     
     #get hair part
     mask[mask > 50] = 255
     mask[mask <= 50] = 0
-    
+    # mask = cv2.ximgproc.dtFilter(guide=im, src=mask, sigmaSpatial=500, sigmaColor=100)
+    # # # print(np.unique(mask))
+    # thres, mask = cv2.threshold(mask, thresh=127, maxval=255, type=cv2.THRESH_BINARY)
+
     # get hair image
     mask_pts = np.where(mask == 255)
     pt_row, pt_col = np.array(mask_pts[0]), np.array(mask_pts[1])
@@ -227,3 +250,36 @@ if __name__ == '__main__':
     circular_LBP(hair_gray, radius=3, n_points=32)#circle LBP with interpolation
     plt.show()
     
+
+    # fig, ax = plt.subplots(nrows=2, ncols=2)
+    #
+    # image = data.coins()
+    # edges = filters.sobel(image)
+    #
+    # low = 0.1
+    # high = 0.35
+    #
+    # lowt = (edges > low).astype(int)
+    # hight = (edges > high).astype(int)
+    # hyst = filters.apply_hysteresis_threshold(edges, low, high)
+    #
+    # ax[0, 0].imshow(hyst + hight, cmap='gray')
+    # ax[0, 0].set_title('Original image')
+    #
+    # ax[0, 1].imshow(hight, cmap='magma')
+    # ax[0, 1].set_title('Sobel edges')
+    #
+    # ax[1, 0].imshow(lowt, cmap='magma')
+    # ax[1, 0].set_title('Low threshold')
+    #
+    # ax[1, 1].imshow(hyst, cmap='magma')
+    # ax[1, 1].set_title('Hysteresis threshold')
+    #
+    # print(np.max(hyst + hight))
+    #
+    # for a in ax.ravel():
+    #     a.axis('off')
+    #
+    # plt.tight_layout()
+    #
+    # plt.show()
